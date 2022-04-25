@@ -2,7 +2,6 @@ import { MenuIcon, XIcon } from "@heroicons/react/solid";
 import { signOut } from "firebase/auth";
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { Link } from "react-router-dom";
 import auth from "../../firebase.init";
 import logo from "../../image/Logo.svg";
 import CustomLink from "../CustomLink/CustomLink";
@@ -15,7 +14,6 @@ const Header = () => {
   const allok = (ok) => {
     setOpen(ok);
   };
-  console.log(user)
   const handleSignOut = () => {
     signOut(auth)
   }

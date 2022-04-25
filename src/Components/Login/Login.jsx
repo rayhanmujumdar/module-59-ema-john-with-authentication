@@ -1,8 +1,8 @@
 import { EyeIcon, EyeOffIcon } from "@heroicons/react/solid";
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import googleLogo from "../../Assets/Image/google.svg";
-import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { useSignInWithEmailAndPassword, useSignInWithGoogle } from "react-firebase-hooks/auth";
 import auth from "../../firebase.init";
 import toast from "react-hot-toast";
 
@@ -10,9 +10,15 @@ const Login = () => {
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [signInWithEmailAndPassword, user, loading, error] =
-    useSignInWithEmailAndPassword(auth);
+  const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth);
+  const [signInwithGoogle,googleUser,googleLoading,googleError] = useSignInWithGoogle(auth)
+  const handleGoogleSignIn = () => {
+    signInwithGoogle()
+  }
   const navigate = useNavigate();
+  const location = useLocation()
+  const from  = location.state?.from?.pathname || '/'
+  console.log(location)
   const handleShowPassword = (toggle) => {
     setShow(toggle);
   };
@@ -26,12 +32,12 @@ const Login = () => {
     event.preventDefault();
     signInWithEmailAndPassword(email, password);
   };
-  if (error) {
-    toast.error(error?.message, { id: "error" });
+  if (error || googleError) {
+    toast.error(error?.message || googleError?.message, { id: "error" });
   }
-  if (user) {
+  if(user || googleUser){
     toast.success("successfuly login", { id: "success" });
-    navigate("/");
+    navigate(from,{replace: true});
   }
   const addSpinner = (
     <div class="flex items-center justify-center absolute bg-neutral-500 bg-opacity-50 z-10 h-screen top-0 w-full">
@@ -64,9 +70,10 @@ const Login = () => {
       </button>
     </div>
   );
+  const globalLoading = loading || googleLoading
   return (
     <div className="w-full">
-      {loading && addSpinner}
+      { globalLoading && addSpinner}
       <div className="flex justify-center items-center flex-col text-left my-20 md:w-[450px] w-[390px] m-auto bg-slate-200 py-10 shadow-orange-200 drop-shadow-xl rounded-md">
         <h1 className="text-3xl drop-shadow-xl">Login</h1>
         <form action="" onSubmit={handleUserSignIn}>
@@ -132,6 +139,7 @@ const Login = () => {
         </div>
         <div>
           <button
+            onClick={handleGoogleSignIn}
             className="flex items-center justify-center bg w-80 h-12 rounded-md"
             style={{ border: "1px solid rgba(149, 160, 167, 0.8)" }}
           >

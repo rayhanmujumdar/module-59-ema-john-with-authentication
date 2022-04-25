@@ -3,8 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
 
-const CartSummary = (props) => {
-    const { carts, Clear,children,className } = props
+const CartSummary = ({carts, Clear,children,className }) => {
     const [totalPrice,setTotalPrice] = useState(0);
     const [shippinCharge,setShippingCharge] = useState(0)
     const [items,setItems] = useState(0)
@@ -32,6 +31,7 @@ const CartSummary = (props) => {
         const path = '/orders'
         navigate(path)
     }
+    
     return (
         <div className={className}>
             <h1 className='text-4xl my-10'>Order summary</h1>

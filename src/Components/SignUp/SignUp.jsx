@@ -2,7 +2,7 @@ import { EyeIcon, EyeOffIcon } from "@heroicons/react/solid";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import googleLogo from "../../Assets/Image/google.svg";
-import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth'
+import { useCreateUserWithEmailAndPassword, useSignInWithGoogle } from 'react-firebase-hooks/auth'
 import auth from '../../firebase.init'
 import toast from "react-hot-toast";
 
@@ -16,6 +16,10 @@ const SignUp = () => {
   const [confirmPassword,setConfirmPassword] = useState('')
   const [error,setError] = useState('')
   const navigate = useNavigate()
+  const [signInwithGoogle,googleUser,googleLoading,googleError] = useSignInWithGoogle(auth)
+  const handleGoogleSignIn = () => {
+    signInwithGoogle()
+  }
   //hide and show
   const handleShowPassword = (toggle) => {
     setShow(toggle);
@@ -36,13 +40,11 @@ const SignUp = () => {
     e.preventDefault()
     if(password !== confirmPassword){
       setError('password MissMatch')
-      return
-      // toast.error('password MissMatch',{id: 'error'})
+      return toast.error('password MissMatch',{id: 'error'})
     }
     else if(password.length < 6){
       setError('password must be 6 characters or longer')
-      return
-      // toast.error('password must be 6 characters or longer',{id: 'error'})
+      return toast.error('password must be 6 characters or longer',{id: 'error'})
     }
     setError('')
     signInwithEmailPassword(email,password)
@@ -53,7 +55,7 @@ const SignUp = () => {
       toast.error('already in used',{id: 'error'})
     }
   },[fromError])
-  if(user){
+  if(user || googleUser){
     toast.success('successfuly login' ,{id: 'success'})
     navigate('/')
   }
@@ -151,6 +153,7 @@ const SignUp = () => {
           </div>
           <div>
             <button
+              onClick={handleGoogleSignIn}
               className="flex items-center justify-center bg w-80 h-12 rounded-md"
               style={{ border: "1px solid rgba(149, 160, 167, 0.8)" }}
             >
